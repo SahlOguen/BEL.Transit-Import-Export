@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BEL Transit - Import & Export</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ---------- RESET & BASE ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #1e2a3a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #d48c2c;
+            color: #fff;
+            padding: 14px 36px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: background 0.3s, transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #b8731f;
+            transform: translateY(-3px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+        }
+
+        .btn-outline:hover {
+            background: #fff;
+            color: #003366;
+            transform: translateY(-3px);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: #002b4a;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #d48c2c;
+            margin: 10px auto 0;
+            border-radius: 4px;
+        }
+
+        .section-title p {
+            color: #555;
+            max-width: 700px;
+            margin: 15px auto 0;
+            font-size: 1.1rem;
+        }
+
+        /* ---------- HEADER ---------- */
+        header {
+            background: rgba(0, 43, 74, 0.92);
+            backdrop-filter: blur(6px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 12px 0;
+            transition: background 0.3s;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+            display: block;
+        }
+
+        .logo span {
+            color: #d48c2c;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #f0f4fa;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-menu a:hover {
+            color: #d48c2c;
+        }
+
+        /* ---------- HERO AVEC IMAGE BACKGROUND ---------- */
+        .hero {
+            background: linear-gradient(rgba(0, 20, 40, 0.65), rgba(0, 20, 40, 0.75)),
+                url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            color: #fff;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .hero-content h1 span {
+            color: #d48c2c;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 35px;
+            font-weight: 300;
+        }
+
+        .hero-buttons .btn {
+            margin-right: 15px;
+        }
+
+        /* ---------- SERVICES AVEC IMAGES ---------- */
+        #services {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .service-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .service-card .card-body {
+            padding: 25px 20px;
+        }
+
+        .service-card h3 {
+            color: #002b4a;
+            margin-bottom: 8px;
+            font-size: 1.3rem;
+        }
+
+        .service-card p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        /* ---------- À PROPOS AVEC IMAGE À DROITE ---------- */
+        #about {
+            padding: 80px 0;
+            background: #fff;
+        }
+
+        .about-grid {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-text h2 {
+            font-size: 2.3rem;
+            color: #002b4a;
+            margin-bottom: 20px;
+        }
+
+        .about-text p {
+            color: #444;
+            margin-bottom: 18px;
+            font-size: 1.05rem;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+
+        /* ---------- ÉQUIPE DE DIRECTION (AVEC IMAGES EN CERCLE) ---------- */
+        #team {
+            padding: 80px 0;
+            background: #f0f4fa;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .team-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            padding: 30px 20px 25px;
+        }
+
+        .team-card:hover {
+            transform: scale(1.02);
+        }
+
+        .team-card .team-img-wrapper {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 15px;
+            border: 5px solid #d48c2c;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-card .team-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .team-card .team-info {
+            padding: 0 10px;
+        }
+
+        .team-card h3 {
+            color: #002b4a;
+            font-size: 1.3rem;
+        }
+
+        .team-card .role {
+            color: #d48c2c;
+            font-weight: 600;
+            margin: 5px 0 10px;
+        }
+
+        .team-card p {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .team-accroche {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #002b4a;
+            margin: 40px 0 0;
+            border-top: 2px solid #d48c2c;
+            padding-top: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .team-accroche i {
+            color: #d48c2c;
+            margin-right: 10px;
+        }
+
+        /* ---------- TÉMOIGNAGES ---------- */
+        #testimonials {
+            padding: 70px 0;
+            background: #fff;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-item {
+            background: #f8fafc;
+            padding: 30px 25px;
+            border-radius: 16px;
+            border-left: 6px solid #d48c2c;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .testimonial-item i {
+            color: #d48c2c;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .testimonial-item p {
+            font-style: italic;
+            color: #333;
+            font-size: 1.05rem;
+        }
+
+        .testimonial-item .author {
+            margin-top: 15px;
+            font-weight: 700;
+            color: #002b4a;
+        }
+
+        .testimonial-item .company {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        /* ---------- STATS ---------- */
+        .stats {
+            background: #002b4a;
+            color: #fff;
+            padding: 60px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stats-grid .number {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #d48c2c;
+        }
+
+        /* ---------- CTA FINAL ---------- */
+        .cta {
+            background: linear-gradient(135deg, #003366, #001f3f);
+            color: #fff;
+            text-align: center;
+            padding: 70px 0;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .cta .btn {
+            background: #d48c2c;
+            color: #002b4a;
+            margin-top: 15px;
+            font-weight: 700;
+        }
+
+        .cta .btn:hover {
+            background: #b8731f;
+            color: #fff;
+        }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            background: #0d1b2a;
+            color: #b0c4de;
+            padding: 35px 0;
+            text-align: center;
+        }
+
+        footer .socials i {
+            font-size: 1.8rem;
+            margin: 0 12px;
+            color: #b0c4de;
+            transition: color 0.3s;
+        }
+
+        footer .socials i:hover {
+            color: #d48c2c;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.6rem;
+            }
+
+            .nav-menu {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .about-grid {
+                flex-direction: column;
+            }
+
+            .about-image {
+                order: -1;
+            }
+
+            .hero {
+                min-height: 80vh;
+                padding: 130px 0 60px;
+            }
+
+            .team-card .team-img-wrapper {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-buttons .btn {
+                display: block;
+                margin: 10px 0;
+                text-align: center;
+            }
+
+            .team-card .team-img-wrapper {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER avec LOGO -->
+    <header>
+        <div class="container nav-container">
+            <div class="logo">
+                <img src="LOGO.jpeg" alt="BEL Transit Logo" />
+                BEL Transit - Import & Export<span>.</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">À propos</a></li>
+                <li><a href="#team">Équipe</a></li>
+                <li><a href="#testimonials">Avis</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- HERO avec image de fond maritime/aérien -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Votre partenaire <span>logistique</span> international</h1>
+            <p>Solutions de transit, import et export sur mesure. Fiabilité, réactivité et expertise mondiale.</p>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn">Demander un devis</a>
+                <a href="#services" class="btn btn-outline">Nos services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES avec images -->
+    <section id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nos services de transit</h2>
+                <p>Des solutions complètes pour sécuriser et fluidifier vos chaînes d'approvisionnement.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\R1.jpeg" alt="Transport routier" />
+                    <div class="card-body">
+                        <h3>Transport routier</h3>
+                        <p>Messagerie, groupeage et charges complètes en Europe et international.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\PORT.jpeg" alt="Fret maritime" />
+                    <div class="card-body">
+                        <h3>Fret maritime</h3>
+                        <p>Conteneurisation, affrètement et solutions LCL/FCL pour tous vos ports.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\FRET.jpeg" alt="Fret aérien" />
+                    <div class="card-body">
+                        <h3>Fret aérien</h3>
+                        <p>Express, urgence et volumineux. Des départs quotidiens vers le monde entier.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\BRD.jpeg" alt="Douane" />
+                    <div class="card-body">
+                        <h3>Douane & formalités</h3>
+                        <p>Déclarations, conseils en réglementation et accompagnement personnalisé.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- À PROPOS avec image à droite -->
+    <section id="about">
+        <div class="container about-grid">
+            <div class="about-text">
+                <h2>Un partenaire de confiance depuis 10 ans</h2>
+                <p>
+                    <strong>BEL Transit</strong> accompagne les entreprises dans leurs échanges internationaux en offrant des prestations de transit sur mesure. Notre expertise couvre l'ensemble de la chaîne logistique : transport, douane, stockage et distribution.
+                </p>
+                <p>
+                    Nous nous engageons à fournir un service personnalisé, réactif et transparent, avec une veille réglementaire constante pour sécuriser vos opérations.
+                </p>
+                <p>
+                    <i class="fas fa-check-circle" style="color: #d48c2c;"></i> 350+ clients satisfaits<br />
+                    <i class="fas fa-check-circle" style="color: #d48c2c;"></i> 48 pays desservis<br />
+                    <i class="fas fa-check-circle" style="color: #d48c2c;"></i> 99% de livraison à temps
+                </p>
+            </div>
+            <div class="about-image">
+                <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\AP.jpeg" alt="Équipe logistique" />
+            </div>
+        </div>
+    </section>
+
+    <!-- ÉQUIPE DE DIRECTION (images en cercle) -->
+    <section id="team">
+        <div class="container">
+            <div class="section-title">
+                <h2>Notre Équipe de Direction</h2>
+                <p>Des experts passionnés au service de votre supply chain.</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-img-wrapper">
+                        <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\bode.png" alt="Directeur général" />
+                    </div>
+                    <div class="team-info">
+                        <h3>Beaudelair Ebara Languy</h3>
+                        <div class="role">Président & Directeur Général</div>
+                        <p>16 ans d'expérience dans le transport international et Transit et Declaration en douane.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img-wrapper">
+                        <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\OG.png" alt="Agent de terrain" />
+                    </div>
+                    <div class="team-info">
+                        <h3>Hermann Ovounga</h3>
+                        <div class="role">Agent de terrain & Opérateur Transit</div>
+                        <p>Expert en optimisation des chaînes d'approvisionnement et supply chain durable.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img-wrapper">
+                        <img src="C:\Users\OGUEN\Documents\W. SITE\SITE BODE\BD.png" alt="Directeur technique" />
+                    </div>
+                    <div class="team-info">
+                        <h3>Brunel Mandzuono</h3>
+                        <div class="role">Directeur Technique & Développement</div>
+                        <p>Spécialiste des marchés émergents et des relations clients grands comptes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="team-accroche">
+                <i class="fas fa-shield-alt"></i> Trois experts passionnés pour protéger votre entreprise
+            </div>
+        </div>
+    </section>
+
+    <!-- TÉMOIGNAGES -->
+    <section id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Ils nous font confiance</h2>
+                <p>Des retours de nos clients partenaires.</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-item">
+                    <i class="fas fa-quote-right"></i>
+                    <p>"Un professionnalisme exemplaire. Nos expéditions vers l'Asie sont désormais fluides et sans surprise."</p>
+                    <div class="author">Claire D.</div>
+                    <div class="company">Textile & Co</div>
+                </div>
+                <div class="testimonial-item">
+                    <i class="fas fa-quote-right"></i>
+                    <p>"L'équipe de BEL Transit a su s'adapter à nos contraintes de délais avec une réactivité remarquable."</p>
+                    <div class="author">Philippe R.</div>
+                    <div class="company">Europ'Import</div>
+                </div>
+                <div class="testimonial-item">
+                    <i class="fas fa-quote-right"></i>
+                    <p>"Un accompagnement douane irréprochable. Nous avons gagné en sérénité et en compétitivité."</p>
+                    <div class="author">Marie L.</div>
+                    <div class="company">Tech Global Supply</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATISTIQUES -->
+    <section class="stats">
+        <div class="container stats-grid">
+            <div><div class="number">12+</div><p>Années d'expertise</p></div>
+            <div><div class="number">350</div><p>Clients satisfaits</p></div>
+            <div><div class="number">48</div><p>Pays desservis</p></div>
+            <div><div class="number">99%</div><p>Livraison à temps</p></div>
+        </div>
+    </section>
+
+    <!-- CONTACT / CTA -->
+    <section id="contact" class="cta">
+        <div class="container">
+            <h2>Prêt à expédier vos marchandises ?</h2>
+            <p>Contactez-nous pour un devis personnalisé et gratuit.</p>
+            <a href="#" class="btn">+242 06 6352156</a>
+            <p style="margin-top: 20px; font-size: 1rem;">ou écrivez-nous : <strong>contact@bel-transit.com</strong></p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 BEL Transit - Import & Export. Tous droits réservés.</p>
+            <div class="socials" style="margin-top: 15px;">
+                <i class="fab fa-linkedin"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-facebook"></i>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
